@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaign Component Builder — Tryg</title>
+  <style>
+    /* =========================================================
+       Brand Tokens (extracted from Figma MCP)
+       ========================================================= */
+    :root {
+      --color-primary:  #ED1C24;
+      --color-primary-dark: #D41920;
+      --color-text:     #1A1A1A;
+      --color-text-light: #666666;
+      --color-bg:       #FFFFFF;
+      --color-bg-alt:   #F5F5F5;
+      --color-border:   #E0E0E0;
+      --font-heading:   'Tryg Sans', Arial, sans-serif;
+      --font-body:      Arial, sans-serif;
+      --spacing-sm:     8px;
+      --spacing-md:     16px;
+      --spacing-lg:     32px;
+      --spacing-xl:     64px;
+      --radius:         24px;
+      --radius-sm:      8px;
+      --radius-card:    12px;
+    }
+
+    /* =========================================================
+       Builder UI Styles
+       ========================================================= */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #1a1a1a;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .builder-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-primary);
+      color: #fff;
+      padding: 0 20px;
+      height: 56px;
+      flex-shrink: 0;
+    }
+    .builder-topbar h1 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .builder-topbar .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .builder-topbar .component-count {
+      background: rgba(255,255,255,0.15);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    /* Settings row */
+    .builder-settings {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .builder-settings label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+    }
+    .builder-settings input[type="text"],
+    .builder-settings select {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      font-size: 13px;
+      background: #fff;
+    }
+    .builder-settings input[type="text"] {
+      width: 240px;
+    }
+    .builder-settings select {
+      width: 80px;
+    }
+    .builder-settings .reset-btn {
+      margin-left: auto;
+      padding: 6px 14px;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+      transition: background 0.15s;
+    }
+    .builder-settings .reset-btn:hover {
+      background: #f0f0f0;
+    }
+
+    /* Main Three-Panel Layout */
+    .builder-main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left Panel — Library */
+    .panel-library {
+      width: 260px;
+      min-width: 260px;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .panel-library h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .library-category {
+      margin-bottom: 16px;
+    }
+    .library-category h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #aaa;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .library-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, border-color 0.15s;
+      margin-bottom: 4px;
+      border: 1.5px solid transparent;
+    }
+    .library-item:hover {
+      background: #fafafa;
+    }
+    .library-item.previewing {
+      background: #fff5f5;
+      border-color: var(--color-primary);
+    }
+    .library-item input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--color-primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .library-item-info {
+      flex: 1;
+      cursor: pointer;
+    }
+    .library-item-info .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .library-item-info .item-name .preview-icon {
+      font-size: 12px;
+      color: #bbb;
+      transition: color 0.15s;
+    }
+    .library-item-info:hover .item-name .preview-icon {
+      color: var(--color-primary);
+    }
+    .library-item.previewing .item-name .preview-icon {
+      color: var(--color-primary);
+    }
+    .library-item-info .item-desc {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    /* Centre Panel — Canvas */
+    .panel-canvas {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f5f6f8;
+      min-width: 280px;
+    }
+    .canvas-header {
+      padding: 16px 20px 8px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+    }
+    .canvas-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 16px;
+    }
+    .canvas-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #bbb;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .canvas-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      cursor: grab;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .canvas-card:active {
+      cursor: grabbing;
+    }
+    .canvas-card.drag-over {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(237, 28, 36, 0.15);
+    }
+    .canvas-card.dragging {
+      opacity: 0.4;
+    }
+    .canvas-card .drag-handle {
+      color: #ccc;
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .canvas-card .card-info {
+      flex: 1;
+    }
+    .canvas-card .card-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .canvas-card .card-category {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .canvas-card .card-remove {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+      line-height: 1;
+      border-radius: 50%;
+      transition: color 0.15s, background 0.15s;
+    }
+    .canvas-card .card-remove:hover {
+      color: var(--color-primary);
+      background: rgba(237, 28, 36, 0.08);
+    }
+
+    .canvas-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #e0e0e0;
+      background: #fff;
+    }
+    .export-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .export-btn:hover {
+      background: var(--color-primary-dark);
+    }
+    .export-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Right Panel — Preview */
+    .panel-preview {
+      width: 420px;
+      min-width: 320px;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-left: 1px solid #e0e0e0;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .preview-header .preview-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+    }
+    .preview-header .preview-label .preview-component-name {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .preview-toggles {
+      display: flex;
+      gap: 4px;
+    }
+    .preview-toggles button {
+      padding: 4px 10px;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.15s;
+    }
+    .preview-toggles button.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .preview-frame-wrapper {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      background: #e8e8e8;
+      padding: 16px;
+    }
+    .preview-frame-wrapper iframe {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      height: 100%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="builder-topbar">
+    <h1>Campaign Component Builder</h1>
+    <div class="topbar-right">
+      <span class="component-count" id="componentCount">0 components selected</span>
+    </div>
+  </header>
+
+  <!-- Settings Row (Phase 6 polish) -->
+  <div class="builder-settings">
+    <label for="pageTitle">Tryg DK Campaign Builder</label>
+    <input type="text" id="pageTitle" placeholder="Kampagne" value="Kampagne">
+    <label for="marketSelect">Market</label>
+    <select id="marketSelect">
+      <option value="da" selected>DK</option>
+      <option value="no">NO</option>
+      <option value="se">SE</option>
+    </select>
+    <button class="reset-btn" id="resetBtn">Reset All</button>
+  </div>
+
+  <!-- Three-Panel Layout -->
+  <div class="builder-main">
+
+    <!-- Left: Component Library -->
+    <aside class="panel-library" id="libraryPanel"></aside>
+
+    <!-- Centre: Canvas -->
+    <main class="panel-canvas">
+      <div class="canvas-header">Selected Components</div>
+      <div class="canvas-list" id="canvasList">
+        <div class="canvas-empty" id="canvasEmpty">
+          Select components from<br>the library to get started
+        </div>
+      </div>
+      <div class="canvas-footer">
+        <button class="export-btn" id="exportBtn" disabled>Export Page</button>
+      </div>
+    </main>
+
+    <!-- Right: Live Preview -->
+    <section class="panel-preview">
+      <div class="preview-header">
+        <span class="preview-label" id="previewLabel">Preview</span>
+        <div class="preview-toggles">
+          <button class="active" data-width="375">Mobile</button>
+          <button data-width="1280">Desktop</button>
+        </div>
+      </div>
+      <div class="preview-frame-wrapper">
+        <iframe id="previewFrame" width="375" frameborder="0"></iframe>
+      </div>
+    </section>
+
+  </div>
+
+  <script type="module">
+    import { COMPONENTS } from './components/index.js';
+
+    /* =============================================================
+       BRAND TOKENS (inline for export injection)
+       ============================================================= */
+    const BRAND_TOKENS = `
+:root {
+  --color-primary:  #ED1C24;
+  --color-primary-dark: #D41920;
+  --color-text:     #1A1A1A;
+  --color-text-light: #666666;
+  --color-bg:       #FFFFFF;
+  --color-bg-alt:   #F5F5F5;
+  --color-border:   #E0E0E0;
+  --font-heading:   'Tryg Sans', Arial, sans-serif;
+  --font-body:      Arial, sans-serif;
+  --spacing-sm:     8px;
+  --spacing-md:     16px;
+  --spacing-lg:     32px;
+  --spacing-xl:     64px;
+  --radius:         24px;
+  --radius-sm:      8px;
+  --radius-card:    12px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-body); color: var(--color-text); line-height: 1.6; }
+img { max-width: 100%; height: auto; }
+`;
+
+    /* =============================================================
+       APPLICATION STATE
+       ============================================================= */
+    let selectedComponents = [];
+    let previewingId = null;
+
+    /* =============================================================
+       DOM REFERENCES
+       ============================================================= */
+    const libraryPanel   = document.getElementById('libraryPanel');
+    const canvasList     = document.getElementById('canvasList');
+    const canvasEmpty    = document.getElementById('canvasEmpty');
+    const exportBtn      = document.getElementById('exportBtn');
+    const previewFrame   = document.getElementById('previewFrame');
+    const componentCount = document.getElementById('componentCount');
+    const pageTitleInput = document.getElementById('pageTitle');
+    const marketSelect   = document.getElementById('marketSelect');
+    const resetBtn       = document.getElementById('resetBtn');
+
+    /* =============================================================
+       ANALYTICS SNIPPETS (Phase 5)
+       ============================================================= */
+    function analyticsSnippet() {
+      return `<!-- Adobe Analytics -->
+    <script src="https://cdn.tryg.com/analytics/AppMeasurement.js"><\/script>
+    <script>
+      var s = s_gi('trygprod');
+      s.pageName = document.title;
+      s.channel  = 'campaign';
+      s.eVar1    = '${marketSelect.value}';
+      s.eVar2    = 'campaign-landing';
+    <\/script>`;
+    }
+
+    function tealiumSnippet() {
+      return `<!-- Tealium iQ -->
+    <script>
+      var utag_data = {
+        page_type:    'campaign-landing',
+        market:       '${marketSelect.value}',
+        product_type: '',
+        campaign_id:  ''
+      };
+    <\/script>
+    <script src="https://tags.tiqcdn.com/utag/tryg/${marketSelect.value}/prod/utag.js" async><\/script>`;
+    }
+
+    function utmHandling() {
+      return `// UTM Parameter Handling
+      var params       = new URLSearchParams(window.location.search);
+      var utm_source   = params.get('utm_source')   || '';
+      var utm_medium   = params.get('utm_medium')   || '';
+      var utm_campaign = params.get('utm_campaign') || '';
+
+      if (typeof s !== 'undefined') {
+        s.eVar3 = utm_campaign;
+        s.eVar4 = utm_source;
+        s.eVar5 = utm_medium;
+      }
+      if (typeof utag_data !== 'undefined') {
+        utag_data.campaign_id = utm_campaign;
+      }
+
+      // Track CTA clicks
+      document.querySelectorAll('[data-track="cta"]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof s !== 'undefined' && s.tl) {
+            s.tl(this, 'o', 'CTA Click: ' + (this.textContent || '').trim());
+          }
+        });
+      });`;
+    }
+
+    /* =============================================================
+       EXPORT LOGIC (Phase 4)
+       ============================================================= */
+    function assembleExport(components) {
+      const pageTitle = pageTitleInput.value || 'Kampagne';
+      const lang      = marketSelect.value;
+      const css       = components.map(c => c.css).join('\n');
+      const html      = components.map(c => c.html).join('\n');
+      const js        = components.map(c => c.js).filter(Boolean).join('\n');
+
+      return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- EDIT: Page title -->
+  <title>${pageTitle}</title>
+  <style>
+    ${BRAND_TOKENS}
+    ${css}
+  </style>
+  ${analyticsSnippet()}
+  ${tealiumSnippet()}
+</head>
+<body>
+  ${html}
+  <script>
+    ${utmHandling()}
+    ${js}
+  <\/script>
+</body>
+</html>`;
+    }
+
+    function downloadExport(htmlString) {
+      const blob = new Blob([htmlString], { type: 'text/html' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'campaign-page.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    /* =============================================================
+       RENDER: Library Panel
+       ============================================================= */
+    function renderLibrary() {
+      const categories = [...new Set(COMPONENTS.map(c => c.category))];
+      libraryPanel.innerHTML = '<h2>Component Library</h2>';
+
+      categories.forEach(cat => {
+        const group = document.createElement('div');
+        group.className = 'library-category';
+        group.innerHTML = `<h3>${cat}</h3>`;
+
+        COMPONENTS.filter(c => c.category === cat).forEach(comp => {
+          const isSelected = selectedComponents.some(s => s.id === comp.id);
+          const isPreviewing = previewingId === comp.id;
+          const item = document.createElement('div');
+          item.className = 'library-item' + (isPreviewing ? ' previewing' : '');
+          item.innerHTML = `
+            <input type="checkbox" data-id="${comp.id}" ${isSelected ? 'checked' : ''}>
+            <div class="library-item-info">
+              <div class="item-name">${comp.name} <span class="preview-icon">&#9673;</span></div>
+              <div class="item-desc">${comp.description}</div>
+            </div>`;
+
+          // Checkbox: toggle selection
+          item.querySelector('input').addEventListener('change', (e) => {
+            if (e.target.checked) {
+              addComponent(comp.id);
+            } else {
+              removeComponent(comp.id);
+            }
+          });
+
+          // Click on info area: preview this component
+          item.querySelector('.library-item-info').addEventListener('click', () => {
+            if (previewingId === comp.id) {
+              previewingId = null; // toggle off — back to canvas preview
+            } else {
+              previewingId = comp.id;
+            }
+            renderLibrary();
+            renderPreview();
+          });
+
+          group.appendChild(item);
+        });
+
+        libraryPanel.appendChild(group);
+      });
+    }
+
+    /* =============================================================
+       RENDER: Canvas (Drag-and-Drop)
+       ============================================================= */
+    let draggedId = null;
+
+    function renderCanvas() {
+      // Clear existing cards (keep empty state element)
+      const cards = canvasList.querySelectorAll('.canvas-card');
+      cards.forEach(c => c.remove());
+
+      canvasEmpty.style.display = selectedComponents.length === 0 ? 'flex' : 'none';
+      exportBtn.disabled = selectedComponents.length === 0;
+
+      // Update count badge
+      const count = selectedComponents.length;
+      componentCount.textContent = `${count} component${count !== 1 ? 's' : ''} selected`;
+
+      selectedComponents.forEach((comp, index) => {
+        const card = document.createElement('div');
+        card.className = 'canvas-card';
+        card.setAttribute('draggable', 'true');
+        card.dataset.id = comp.id;
+
+        card.innerHTML = `
+          <span class="drag-handle">&#9776;</span>
+          <div class="card-info">
+            <div class="card-name">${comp.name}</div>
+            <div class="card-category">${comp.category}</div>
+          </div>
+          <button class="card-remove" title="Remove">&times;</button>`;
+
+        // Remove button
+        card.querySelector('.card-remove').addEventListener('click', () => {
+          removeComponent(comp.id);
+        });
+
+        // Drag events
+        card.addEventListener('dragstart', (e) => {
+          draggedId = comp.id;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          draggedId = null;
+          // Remove drag-over from all
+          canvasList.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        });
+
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          card.classList.add('drag-over');
+        });
+
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('drag-over');
+        });
+
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('drag-over');
+          if (draggedId && draggedId !== comp.id) {
+            reorderSelected(draggedId, comp.id);
+            renderCanvas();
+            renderPreview();
+          }
+        });
+
+        canvasList.appendChild(card);
+      });
+    }
+
+    /* =============================================================
+       RENDER: Live Preview
+       ============================================================= */
+    const previewLabel = document.getElementById('previewLabel');
+
+    function renderPreview() {
+      // Single-component preview mode
+      if (previewingId) {
+        const comp = COMPONENTS.find(c => c.id === previewingId);
+        if (comp) {
+          previewLabel.innerHTML = `Preview <span class="preview-component-name">${comp.name}</span>`;
+          const html = assembleExport([comp]);
+          previewFrame.srcdoc = html;
+          return;
+        }
+      }
+      // Normal canvas preview
+      previewLabel.textContent = 'Preview';
+      if (selectedComponents.length === 0) {
+        previewFrame.srcdoc = `<!DOCTYPE html>
+          <html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#bbb;font-size:14px;text-align:center;">
+          <p>Select components to<br>see a live preview</p>
+          </body></html>`;
+        return;
+      }
+      const html = assembleExport(selectedComponents);
+      previewFrame.srcdoc = html;
+    }
+
+    /* =============================================================
+       STATE MANAGEMENT
+       ============================================================= */
+    function addComponent(id) {
+      const c = COMPONENTS.find(c => c.id === id);
+      if (c && !selectedComponents.some(s => s.id === id)) {
+        selectedComponents.push(c);
+        previewingId = null;
+        renderCanvas();
+        renderPreview();
+        renderLibrary();
+      }
+    }
+
+    function removeComponent(id) {
+      selectedComponents = selectedComponents.filter(c => c.id !== id);
+      previewingId = null;
+      renderCanvas();
+      renderPreview();
+      renderLibrary();
+    }
+
+    function reorderSelected(draggedId, targetId) {
+      const fromIndex = selectedComponents.findIndex(c => c.id === draggedId);
+      const toIndex   = selectedComponents.findIndex(c => c.id === targetId);
+      if (fromIndex === -1 || toIndex === -1) return;
+      const [moved] = selectedComponents.splice(fromIndex, 1);
+      selectedComponents.splice(toIndex, 0, moved);
+    }
+
+    /* =============================================================
+       EVENT LISTENERS
+       ============================================================= */
+    // Export button
+    exportBtn.addEventListener('click', () => {
+      if (selectedComponents.length === 0) return;
+      const html = assembleExport(selectedComponents);
+      downloadExport(html);
+    });
+
+    // Preview viewport toggle
+    document.querySelectorAll('.preview-toggles button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preview-toggles button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        previewFrame.style.width = btn.dataset.width + 'px';
+      });
+    });
+
+    // Page title and market selector trigger preview refresh
+    pageTitleInput.addEventListener('input', () => renderPreview());
+    marketSelect.addEventListener('change', () => renderPreview());
+
+    // Reset button
+    resetBtn.addEventListener('click', () => {
+      selectedComponents = [];
+      previewingId = null;
+      pageTitleInput.value = 'Kampagne';
+      marketSelect.value = 'da';
+      renderLibrary();
+      renderCanvas();
+      renderPreview();
+    });
+
+    /* =============================================================
+       INIT
+       ============================================================= */
+    renderLibrary();
+    renderCanvas();
+    renderPreview();
+
+  </script>
+</body>
+</html>

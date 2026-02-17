@@ -1,0 +1,18 @@
+:root {
+  --color-primary:  #ED1C24;
+  --color-primary-dark: #D41920;
+  --color-text:     #1A1A1A;
+  --color-text-light: #666666;
+  --color-bg:       #FFFFFF;
+  --color-bg-alt:   #F5F5F5;
+  --color-border:   #E0E0E0;
+  --font-heading:   'Tryg Sans', Arial, sans-serif;
+  --font-body:      Arial, sans-serif;
+  --spacing-sm:     8px;
+  --spacing-md:     16px;
+  --spacing-lg:     32px;
+  --spacing-xl:     64px;
+  --radius:         24px;
+  --radius-sm:      8px;
+  --radius-card:    12px;
+}
