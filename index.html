@@ -205,20 +205,6 @@
     }
 
     /* Centre Panel — Canvas */
-    .panel-canvas {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: #f5f6f8;
-      min-width: 280px;
-    }
-    .canvas-header {
-      padding: 16px 20px 8px;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #888;
-    }
     .canvas-list {
       flex: 1;
       overflow-y: auto;
@@ -321,11 +307,27 @@
     /* Right Panel — Preview */
     .panel-preview {
       width: 420px;
-      min-width: 320px;
+      min-width: 280px;
       display: flex;
       flex-direction: column;
       background: #fff;
       border-left: 1px solid #e0e0e0;
+      position: relative;
+    }
+    /* Drag handle on the left edge of the preview panel */
+    .panel-resize-handle {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      cursor: col-resize;
+      z-index: 10;
+      transition: background 0.15s;
+    }
+    .panel-resize-handle:hover,
+    .panel-resize-handle.is-dragging {
+      background: var(--color-primary);
     }
     .preview-header {
       display: flex;
@@ -333,16 +335,33 @@
       justify-content: space-between;
       padding: 10px 16px;
       border-bottom: 1px solid #e0e0e0;
+      gap: 8px;
     }
     .preview-header .preview-label {
       font-size: 13px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: #888;
+      flex-shrink: 0;
     }
     .preview-header .preview-label .preview-component-name {
       color: var(--color-primary);
       font-weight: 600;
+    }
+    .preview-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .preview-scale-indicator {
+      font-size: 11px;
+      color: #aaa;
+      background: #f0f0f0;
+      padding: 2px 7px;
+      border-radius: 10px;
+      min-width: 38px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
     }
     .preview-toggles {
       display: flex;
@@ -368,16 +387,109 @@
       overflow: hidden;
       display: flex;
       align-items: flex-start;
-      justify-content: center;
+      justify-content: flex-start;
       background: #e8e8e8;
       padding: 16px;
+      position: relative;
     }
     .preview-frame-wrapper iframe {
       background: #fff;
       border: 1px solid #ccc;
-      border-radius: var(--radius);
-      height: 100%;
-      transition: width 0.3s;
+      border-radius: var(--radius-sm);
+      transform-origin: top left;
+      flex-shrink: 0;
+    }
+
+    /* Library category collapsible */
+    .library-category h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .library-category h3:hover {
+      color: #888;
+    }
+    .library-category-toggle {
+      font-size: 10px;
+      color: #ccc;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .library-category.collapsed .library-category-toggle {
+      transform: rotate(-90deg);
+    }
+    .library-category-items {
+      overflow: hidden;
+      transition: max-height 0.2s ease;
+      max-height: 2000px;
+    }
+    .library-category.collapsed .library-category-items {
+      max-height: 0;
+    }
+
+    /* Collapsible canvas panel */
+    .canvas-collapse-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+      line-height: 1;
+    }
+    .canvas-collapse-btn:hover {
+      color: #666;
+      background: #f0f0f0;
+    }
+    .canvas-header {
+      padding: 16px 20px 8px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-canvas {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f5f6f8;
+      min-width: 0;
+      transition: flex 0.25s ease, min-width 0.25s ease;
+    }
+    .panel-canvas.collapsed {
+      flex: 0;
+      min-width: 48px;
+      max-width: 48px;
+      overflow: hidden;
+    }
+    .panel-canvas.collapsed .canvas-list,
+    .panel-canvas.collapsed .canvas-footer,
+    .panel-canvas.collapsed .canvas-header-label {
+      display: none;
+    }
+    .canvas-collapsed-label {
+      display: none;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #aaa;
+      padding: 16px 0;
+      margin: auto;
+    }
+    .panel-canvas.collapsed .canvas-collapsed-label {
+      display: block;
+    }
+    .panel-canvas.collapsed .canvas-collapse-btn {
+      transform: rotate(180deg);
     }
   </style>
   <link rel="stylesheet" href="styles.css">
@@ -412,8 +524,12 @@
     <aside class="panel-library" id="libraryPanel"></aside>
 
     <!-- Centre: Canvas -->
-    <main class="panel-canvas">
-      <div class="canvas-header">Selected Components</div>
+    <main class="panel-canvas" id="panelCanvas">
+      <div class="canvas-header">
+        <span class="canvas-header-label">Selected Components</span>
+        <button class="canvas-collapse-btn" id="canvasCollapseBtn" title="Collapse panel">&#8249;</button>
+      </div>
+      <span class="canvas-collapsed-label">Components</span>
       <div class="canvas-list" id="canvasList">
         <div class="canvas-empty" id="canvasEmpty">
           Select components from<br>the library to get started
@@ -425,16 +541,20 @@
     </main>
 
     <!-- Right: Live Preview -->
-    <section class="panel-preview">
+    <section class="panel-preview" id="panelPreview">
+      <div class="panel-resize-handle" id="resizeHandle"></div>
       <div class="preview-header">
         <span class="preview-label" id="previewLabel">Preview</span>
-        <div class="preview-toggles">
-          <button class="active" data-width="375">Mobile</button>
-          <button data-width="1280">Desktop</button>
+        <div class="preview-header-controls">
+          <span class="preview-scale-indicator" id="scaleIndicator">100%</span>
+          <div class="preview-toggles">
+            <button class="active" data-width="375">Mobile</button>
+            <button data-width="1280">Desktop</button>
+          </div>
         </div>
       </div>
-      <div class="preview-frame-wrapper">
-        <iframe id="previewFrame" width="375" frameborder="0"></iframe>
+      <div class="preview-frame-wrapper" id="previewWrapper">
+        <iframe id="previewFrame" frameborder="0"></iframe>
       </div>
     </section>
 
@@ -476,6 +596,8 @@ img { max-width: 100%; height: auto; }
        ============================================================= */
     let selectedComponents = [];
     let previewingId = null;
+    let currentPreviewWidth = 375;
+    let collapsedCategories = {};
 
     /* =============================================================
        DOM REFERENCES
@@ -489,6 +611,12 @@ img { max-width: 100%; height: auto; }
     const pageTitleInput = document.getElementById('pageTitle');
     const marketSelect   = document.getElementById('marketSelect');
     const resetBtn       = document.getElementById('resetBtn');
+    const panelPreview   = document.getElementById('panelPreview');
+    const previewWrapper = document.getElementById('previewWrapper');
+    const scaleIndicator = document.getElementById('scaleIndicator');
+    const resizeHandle   = document.getElementById('resizeHandle');
+    const panelCanvas    = document.getElementById('panelCanvas');
+    const canvasCollapseBtn = document.getElementById('canvasCollapseBtn');
 
     /* =============================================================
        ANALYTICS SNIPPETS (Phase 5)
@@ -598,9 +726,20 @@ img { max-width: 100%; height: auto; }
       libraryPanel.innerHTML = '<h2>Component Library</h2>';
 
       categories.forEach(cat => {
+        const isCollapsed = collapsedCategories[cat] || false;
         const group = document.createElement('div');
-        group.className = 'library-category';
-        group.innerHTML = `<h3>${cat}</h3>`;
+        group.className = 'library-category' + (isCollapsed ? ' collapsed' : '');
+
+        const heading = document.createElement('h3');
+        heading.innerHTML = `${cat} <span class="library-category-toggle">&#9660;</span>`;
+        heading.addEventListener('click', () => {
+          collapsedCategories[cat] = !collapsedCategories[cat];
+          renderLibrary();
+        });
+        group.appendChild(heading);
+
+        const itemsWrapper = document.createElement('div');
+        itemsWrapper.className = 'library-category-items';
 
         COMPONENTS.filter(c => c.category === cat).forEach(comp => {
           const isSelected = selectedComponents.some(s => s.id === comp.id);
@@ -634,9 +773,10 @@ img { max-width: 100%; height: auto; }
             renderPreview();
           });
 
-          group.appendChild(item);
+          itemsWrapper.appendChild(item);
         });
 
+        group.appendChild(itemsWrapper);
         libraryPanel.appendChild(group);
       });
     }
@@ -775,6 +915,29 @@ img { max-width: 100%; height: auto; }
     }
 
     /* =============================================================
+       SCALE-TO-FIT PREVIEW
+       ============================================================= */
+    function updatePreviewScale() {
+      const padding = 32; // 16px each side
+      const availableWidth  = previewWrapper.clientWidth  - padding;
+      const availableHeight = previewWrapper.clientHeight - padding;
+      const scale = Math.min(1, availableWidth / currentPreviewWidth);
+
+      previewFrame.style.width  = currentPreviewWidth + 'px';
+      previewFrame.style.height = (availableHeight / scale) + 'px';
+      previewFrame.style.transform = `scale(${scale})`;
+
+      // Centre narrow frames (e.g. mobile 375px in a wide panel)
+      if (scale >= 1 && currentPreviewWidth < availableWidth) {
+        previewFrame.style.marginLeft = Math.round((availableWidth - currentPreviewWidth) / 2) + 'px';
+      } else {
+        previewFrame.style.marginLeft = '0';
+      }
+
+      scaleIndicator.textContent = Math.round(scale * 100) + '%';
+    }
+
+    /* =============================================================
        EVENT LISTENERS
        ============================================================= */
     // Export button
@@ -784,13 +947,56 @@ img { max-width: 100%; height: auto; }
       downloadExport(html);
     });
 
-    // Preview viewport toggle
+    // Preview viewport toggle (scale-to-fit)
     document.querySelectorAll('.preview-toggles button').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.preview-toggles button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        previewFrame.style.width = btn.dataset.width + 'px';
+        currentPreviewWidth = parseInt(btn.dataset.width);
+        updatePreviewScale();
       });
+    });
+
+    // Panel resize — drag left edge of preview panel
+    let isResizing = false;
+    let resizeStartX = 0;
+    let resizeStartWidth = 0;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+      isResizing = true;
+      resizeStartX = e.clientX;
+      resizeStartWidth = panelPreview.offsetWidth;
+      resizeHandle.classList.add('is-dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isResizing) return;
+      const dx = resizeStartX - e.clientX; // drag left = wider panel
+      const minWidth = 280;
+      const maxWidth = window.innerWidth - 260 - 180;
+      const newWidth = Math.min(maxWidth, Math.max(minWidth, resizeStartWidth + dx));
+      panelPreview.style.width = newWidth + 'px';
+      updatePreviewScale();
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isResizing) return;
+      isResizing = false;
+      resizeHandle.classList.remove('is-dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    });
+
+    // Recompute scale on window resize
+    window.addEventListener('resize', updatePreviewScale);
+
+    // Canvas collapse/expand
+    canvasCollapseBtn.addEventListener('click', () => {
+      panelCanvas.classList.toggle('collapsed');
+      updatePreviewScale();
     });
 
     // Page title and market selector trigger preview refresh
@@ -814,6 +1020,7 @@ img { max-width: 100%; height: auto; }
     renderLibrary();
     renderCanvas();
     renderPreview();
+    updatePreviewScale();
 
   </script>
 </body>
