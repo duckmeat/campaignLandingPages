@@ -491,6 +491,348 @@
     .panel-canvas.collapsed .canvas-collapse-btn {
       transform: rotate(180deg);
     }
+
+    /* =============================================================
+       Edit & Export Modal
+       ============================================================= */
+    .edit-export-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .edit-export-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .edit-export-modal {
+      width: 92vw;
+      height: 92vh;
+      background: #fff;
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.25s ease;
+    }
+    .edit-export-overlay.open .edit-export-modal {
+      transform: translateY(0) scale(1);
+    }
+    .edit-export-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .edit-export-toolbar h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text);
+      flex: 1;
+    }
+    .edit-export-toolbar .toolbar-hint {
+      font-size: 12px;
+      color: #999;
+    }
+    .edit-export-close {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      color: #888;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .edit-export-close:hover {
+      background: #f0f0f0;
+      color: var(--color-primary);
+    }
+    .edit-export-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .edit-export-download-btn {
+      padding: 8px 20px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .edit-export-download-btn:hover {
+      background: var(--color-primary-dark);
+    }
+    .edit-export-viewport-toggles {
+      display: flex;
+      gap: 4px;
+    }
+    .edit-export-viewport-toggles button {
+      padding: 4px 10px;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.15s;
+    }
+    .edit-export-viewport-toggles button.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .edit-export-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      background: #e8e8e8;
+    }
+    .edit-frame-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      padding: 16px;
+      position: relative;
+    }
+    .edit-frame-wrapper iframe {
+      border: 1px solid #ccc;
+      border-radius: var(--radius-sm);
+      background: #fff;
+      transform-origin: top center;
+      flex-shrink: 0;
+      transition: width 0.3s ease;
+    }
+
+    /* Icon picker panel */
+    .icon-picker-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 260px;
+      height: 100%;
+      background: #fff;
+      border-left: 1px solid #e0e0e0;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.08);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+    }
+    .icon-picker-panel.open {
+      transform: translateX(0);
+    }
+    .icon-picker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .icon-picker-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .icon-picker-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #888;
+      padding: 2px;
+    }
+    .icon-picker-close:hover { color: var(--color-primary); }
+    .icon-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 12px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .icon-picker-grid button {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e0e0e0;
+      border-radius: var(--radius-sm);
+      background: #fafafa;
+      cursor: pointer;
+      padding: 8px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .icon-picker-grid button:hover {
+      border-color: var(--color-primary);
+      background: #fff5f5;
+    }
+    .icon-picker-grid button svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Image editor panel */
+    .image-editor-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 320px;
+      height: 100%;
+      background: #fff;
+      border-left: 1px solid #e0e0e0;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.08);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.2s ease;
+    }
+    .image-editor-panel.open {
+      transform: translateX(0);
+    }
+    .image-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .image-editor-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .image-editor-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #888;
+      padding: 2px;
+    }
+    .image-editor-close:hover { color: var(--color-primary); }
+    .image-editor-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .image-editor-preview {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--color-border);
+    }
+    .image-editor-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .image-editor-preview .placeholder-text {
+      font-size: 12px;
+      color: #aaa;
+    }
+    .image-editor-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .image-editor-field input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .image-editor-field input[type="text"]:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+    .image-editor-or {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .image-editor-upload-area {
+      border: 2px dashed #ddd;
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .image-editor-upload-area:hover {
+      border-color: var(--color-primary);
+      background: #fff5f5;
+    }
+    .image-editor-upload-area .upload-icon {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .image-editor-upload-area .upload-text {
+      font-size: 12px;
+      color: #888;
+    }
+    .image-editor-upload-area .upload-text strong {
+      color: var(--color-primary);
+    }
+    .image-editor-apply-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .image-editor-apply-btn:hover {
+      background: var(--color-primary-dark);
+    }
+    .image-editor-apply-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
   </style>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -536,7 +878,7 @@
         </div>
       </div>
       <div class="canvas-footer">
-        <button class="export-btn" id="exportBtn" disabled>Export Page</button>
+        <button class="export-btn" id="exportBtn" disabled>Edit &amp; Export</button>
       </div>
     </main>
 
@@ -558,6 +900,58 @@
       </div>
     </section>
 
+  </div>
+
+  <!-- Edit & Export Modal -->
+  <div class="edit-export-overlay" id="editExportOverlay">
+    <div class="edit-export-modal">
+      <div class="edit-export-toolbar">
+        <h2>Edit Page Content</h2>
+        <span class="toolbar-hint">Click text to edit · Click icons or images to swap</span>
+        <div class="edit-export-viewport-toggles" id="editViewportToggles">
+          <button class="active" data-edit-width="375">Mobile</button>
+          <button data-edit-width="1280">Desktop</button>
+        </div>
+        <div class="edit-export-actions">
+          <button class="edit-export-download-btn" id="editExportDownloadBtn">Export to HTML</button>
+          <button class="edit-export-close" id="editExportCloseBtn" title="Close">&times;</button>
+        </div>
+      </div>
+      <div class="edit-export-body">
+        <div class="edit-frame-wrapper" id="editFrameWrapper">
+          <iframe id="editFrame"></iframe>
+        </div>
+        <div class="icon-picker-panel" id="iconPickerPanel">
+          <div class="icon-picker-header">
+            <h3>Choose Icon</h3>
+            <button class="icon-picker-close" id="iconPickerClose">&times;</button>
+          </div>
+          <div class="icon-picker-grid" id="iconPickerGrid"></div>
+        </div>
+        <div class="image-editor-panel" id="imageEditorPanel">
+          <div class="image-editor-header">
+            <h3>Replace Image</h3>
+            <button class="image-editor-close" id="imageEditorClose">&times;</button>
+          </div>
+          <div class="image-editor-body">
+            <div class="image-editor-preview" id="imageEditorPreview">
+              <span class="placeholder-text">Current image</span>
+            </div>
+            <div class="image-editor-field">
+              <label for="imageUrlInput">Image URL</label>
+              <input type="text" id="imageUrlInput" placeholder="https://example.com/photo.jpg">
+            </div>
+            <div class="image-editor-or">— or —</div>
+            <div class="image-editor-upload-area" id="imageUploadArea">
+              <div class="upload-icon">📁</div>
+              <div class="upload-text"><strong>Click to upload</strong> or drag a file here</div>
+              <input type="file" id="imageFileInput" accept="image/*" style="display:none">
+            </div>
+            <button class="image-editor-apply-btn" id="imageApplyBtn" disabled>Apply Image</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -940,11 +1334,566 @@ img { max-width: 100%; height: auto; }
     /* =============================================================
        EVENT LISTENERS
        ============================================================= */
-    // Export button
-    exportBtn.addEventListener('click', () => {
+    /* =============================================================
+       EDIT & EXPORT MODAL
+       ============================================================= */
+    const editOverlay     = document.getElementById('editExportOverlay');
+    const editFrame       = document.getElementById('editFrame');
+    const editCloseBtn    = document.getElementById('editExportCloseBtn');
+    const editDownloadBtn = document.getElementById('editExportDownloadBtn');
+    const iconPickerPanel = document.getElementById('iconPickerPanel');
+    const iconPickerGrid  = document.getElementById('iconPickerGrid');
+    const iconPickerClose = document.getElementById('iconPickerClose');
+
+    const imageEditorPanel = document.getElementById('imageEditorPanel');
+    const imageEditorClose = document.getElementById('imageEditorClose');
+    const imageEditorPreview = document.getElementById('imageEditorPreview');
+    const imageUrlInput    = document.getElementById('imageUrlInput');
+    const imageUploadArea  = document.getElementById('imageUploadArea');
+    const imageFileInput   = document.getElementById('imageFileInput');
+    const imageApplyBtn    = document.getElementById('imageApplyBtn');
+
+    let activeIconTarget = null; // index of the SVG being replaced
+    let activeImageTarget = null; // index of the <img> being replaced
+    let pendingImageSrc = null;  // URL or data-URL ready to apply
+
+    // --- Curated icon library (inline SVGs) ---
+    const ICON_LIBRARY = [
+      { name: 'Checkmark',  svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Shield',     svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Star',       svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Heart',      svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Clock',      svg: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="var(--color-primary)" stroke-width="2"/><path d="M12 6v6l4 2" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Lock',       svg: '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="var(--color-primary)" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Car',        svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 17h14M5 17a2 2 0 01-2-2v-3l2-5h10l2 5v3a2 2 0 01-2 2M5 17a2 2 0 002 2h0a2 2 0 002-2M15 17a2 2 0 002 2h0a2 2 0 002-2" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Home',       svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 22V12h6v10" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Globe',      svg: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="var(--color-primary)" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Phone',      svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'User',       svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="var(--color-primary)" stroke-width="2"/></svg>' },
+      { name: 'Chart',      svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Bolt',       svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'ThumbsUp',   svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M14 9V5a3 3 0 00-6 0v0l-2 8h3" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 13h6.764a2 2 0 011.789 1.106l1.447 2.894A2 2 0 0118.211 20H10a2 2 0 01-2-2v-3a2 2 0 012-2z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Arrow Right',svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Mail',       svg: '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="var(--color-primary)" stroke-width="2"/><path d="M22 7l-10 6L2 7" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Umbrella',   svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M18 19a3 3 0 01-6 0M12 2v1M12 3a9 9 0 019 9H3a9 9 0 019-9z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+      { name: 'Wallet',     svg: '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="14" rx="2" stroke="var(--color-primary)" stroke-width="2"/><path d="M2 10h20" stroke="var(--color-primary)" stroke-width="2"/><circle cx="17" cy="14" r="1" fill="var(--color-primary)"/></svg>' },
+      { name: 'Percent',    svg: '<svg viewBox="0 0 24 24" fill="none"><circle cx="7" cy="7" r="3" stroke="var(--color-primary)" stroke-width="2"/><circle cx="17" cy="17" r="3" stroke="var(--color-primary)" stroke-width="2"/><path d="M20 4L4 20" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round"/></svg>' },
+      { name: 'Family',     svg: '<svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3" stroke="var(--color-primary)" stroke-width="2"/><circle cx="17" cy="7" r="2" stroke="var(--color-primary)" stroke-width="2"/><path d="M2 21v-2a4 4 0 014-4h6a4 4 0 014 4v2" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21v-2a3 3 0 00-2-2.83" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round"/></svg>' }
+    ];
+
+    // --- Build icon picker grid ---
+    function buildIconPickerGrid() {
+      iconPickerGrid.innerHTML = '';
+      ICON_LIBRARY.forEach((icon, i) => {
+        const btn = document.createElement('button');
+        btn.title = icon.name;
+        btn.innerHTML = icon.svg;
+        btn.addEventListener('click', () => {
+          if (activeIconTarget !== null) {
+            editFrame.contentWindow.postMessage({ type: 'replaceIcon', index: activeIconTarget, svg: icon.svg }, '*');
+            closeIconPicker();
+          }
+        });
+        iconPickerGrid.appendChild(btn);
+      });
+    }
+    buildIconPickerGrid();
+
+    // --- Editing helper script injected into the preview iframe ---
+    function getEditingScript() {
+      return `
+<style>
+  [contenteditable="true"] {
+    outline: 2px dashed transparent;
+    transition: outline-color 0.15s, background 0.15s;
+    cursor: text;
+    border-radius: 3px;
+  }
+  [contenteditable="true"]:hover {
+    outline-color: rgba(59,130,246,0.45);
+    background: rgba(59,130,246,0.04);
+  }
+  [contenteditable="true"]:focus {
+    outline-color: #3b82f6;
+    outline-style: solid;
+    background: rgba(59,130,246,0.06);
+  }
+  .icon-edit-overlay {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .icon-edit-overlay:hover {
+    background: rgba(59,130,246,0.12);
+  }
+  .icon-edit-overlay:hover::after {
+    content: '✎';
+    font-size: 14px;
+    color: #3b82f6;
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  [data-icon-wrapper] {
+    position: relative;
+    display: inline-block;
+  }
+  .img-edit-overlay {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    background: transparent;
+  }
+  .img-edit-overlay:hover {
+    background: rgba(59,130,246,0.18);
+  }
+  .img-edit-overlay .img-edit-badge {
+    display: none;
+    background: #3b82f6;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+  .img-edit-overlay:hover .img-edit-badge {
+    display: block;
+  }
+  [data-img-wrapper] {
+    position: relative !important;
+    display: block;
+  }
+  [data-img-editable] {
+    cursor: pointer !important;
+    transition: outline 0.15s, filter 0.15s;
+    outline: 3px solid transparent;
+    outline-offset: -3px;
+  }
+  [data-img-editable]:hover {
+    outline-color: #3b82f6;
+    filter: brightness(0.85);
+  }
+</style>
+<script>
+(function() {
+  // Make text elements editable
+  var textSelectors = 'h1, h2, h3, h4, h5, h6, p, li, span, a, button, figcaption, blockquote, dt, dd, label, strong, em, td, th';
+  var editableEls = document.querySelectorAll(textSelectors);
+  editableEls.forEach(function(el) {
+    // Skip elements that only contain other block elements
+    var hasDirectText = false;
+    el.childNodes.forEach(function(n) {
+      if (n.nodeType === 3 && n.textContent.trim().length > 0) hasDirectText = true;
+    });
+    // Also consider elements with only inline children as text-bearing
+    if (!hasDirectText && el.children.length > 0) {
+      var allInline = true;
+      for (var i = 0; i < el.children.length; i++) {
+        var tag = el.children[i].tagName;
+        if (['DIV','SECTION','ARTICLE','UL','OL','TABLE','FORM','HEADER','FOOTER','NAV','ASIDE','MAIN','FIGURE'].indexOf(tag) !== -1) {
+          allInline = false;
+          break;
+        }
+      }
+      if (allInline) hasDirectText = true;
+    }
+    if (hasDirectText) {
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('spellcheck', 'false');
+    }
+  });
+
+  // Wrap inline SVG icons with an edit overlay
+  var svgs = document.querySelectorAll('svg');
+  svgs.forEach(function(svg, idx) {
+    // Skip very large SVGs (likely illustrations / placeholders, not icons)
+    var w = parseInt(svg.getAttribute('width') || '0');
+    var h = parseInt(svg.getAttribute('height') || '0');
+    var vb = svg.getAttribute('viewBox');
+    if (w > 80 || h > 80) return;
+    // Also skip if it's inside a very large container (placeholder images)
+    var parent = svg.parentElement;
+    if (!parent) return;
+    // Wrap parent for positioning
+    parent.setAttribute('data-icon-wrapper', '');
+    parent.style.position = 'relative';
+    var overlay = document.createElement('div');
+    overlay.className = 'icon-edit-overlay';
+    overlay.dataset.iconIdx = idx;
+    overlay.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({ type: 'openIconPicker', index: idx }, '*');
+    });
+    parent.appendChild(overlay);
+  });
+
+  // Listen for icon replacement messages from parent
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'replaceIcon') {
+      var svgs = document.querySelectorAll('svg');
+      var target = svgs[e.data.index];
+      if (target) {
+        var temp = document.createElement('div');
+        temp.innerHTML = e.data.svg;
+        var newSvg = temp.querySelector('svg');
+        if (newSvg) {
+          // Preserve original sizing attributes
+          var ow = target.getAttribute('width');
+          var oh = target.getAttribute('height');
+          if (ow) newSvg.setAttribute('width', ow);
+          if (oh) newSvg.setAttribute('height', oh);
+          target.parentNode.replaceChild(newSvg, target);
+        }
+      }
+    }
+    if (e.data && e.data.type === 'replaceImage') {
+      // Find the target by data-img-idx attribute
+      var target = document.querySelector('[data-img-idx="' + e.data.index + '"]');
+      if (target) {
+        if (target.tagName === 'IMG') {
+          // It's a real <img>, just swap src
+          target.src = e.data.src;
+        } else if (target.hasAttribute('data-img-placeholder')) {
+          // It's a SVG placeholder container — replace with a real <img>
+          var newImg = document.createElement('img');
+          newImg.src = e.data.src;
+          newImg.alt = 'Custom image';
+          newImg.style.width = '100%';
+          newImg.style.height = '100%';
+          newImg.style.objectFit = 'cover';
+          newImg.style.borderRadius = 'inherit';
+          newImg.setAttribute('data-img-editable', '');
+          newImg.setAttribute('data-img-idx', e.data.index);
+          // Clear placeholder contents and insert image
+          target.innerHTML = '';
+          target.removeAttribute('data-img-placeholder');
+          target.appendChild(newImg);
+          // Add click handler on the new img
+          newImg.addEventListener('click', function(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            window.parent.postMessage({ type: 'openImageEditor', index: e.data.index, currentSrc: newImg.src }, '*');
+          });
+        }
+      }
+    }
+  });
+
+  // Wrap <img> elements with click-to-edit
+  var imgs = document.querySelectorAll('img');
+  var imgIndex = 0;
+  imgs.forEach(function(img) {
+    var idx = imgIndex++;
+    img.setAttribute('data-img-editable', '');
+    img.setAttribute('data-img-idx', idx);
+    img.style.cursor = 'pointer';
+
+    // Also add an overlay for the visual badge
+    var parent = img.parentElement;
+    if (parent) {
+      var cs = window.getComputedStyle(parent);
+      if (cs.position === 'static' || cs.position === '') {
+        parent.style.position = 'relative';
+      }
+      parent.setAttribute('data-img-wrapper', '');
+      var overlay = document.createElement('div');
+      overlay.className = 'img-edit-overlay';
+      var badge = document.createElement('span');
+      badge.className = 'img-edit-badge';
+      badge.textContent = '\uD83D\uDDBC Replace image';
+      overlay.appendChild(badge);
+      overlay.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.parent.postMessage({ type: 'openImageEditor', index: idx, currentSrc: img.src }, '*');
+      });
+      parent.appendChild(overlay);
+    }
+
+    // Direct click handler on the image itself as fallback
+    img.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({ type: 'openImageEditor', index: idx, currentSrc: img.src }, '*');
+    });
+  });
+
+  // Also handle SVG-based image placeholders (large SVGs that look like placeholder images)
+  var allSvgs = document.querySelectorAll('svg');
+  allSvgs.forEach(function(svg) {
+    var w = parseInt(svg.getAttribute('width') || '0');
+    var h = parseInt(svg.getAttribute('height') || '0');
+    // Only target large SVGs (>= 80px) that are likely image placeholders, not small icons
+    if (w < 80 && h < 80) return;
+    // Check if this SVG's container looks like an image placeholder
+    var container = svg.parentElement;
+    if (!container) return;
+    // Assign an img index for this placeholder so image editor can target it
+    var idx = imgIndex++;
+    container.setAttribute('data-img-editable', '');
+    container.setAttribute('data-img-idx', idx);
+    container.setAttribute('data-img-placeholder', 'svg');
+    container.style.cursor = 'pointer';
+    container.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({ type: 'openImageEditor', index: idx, currentSrc: '', isPlaceholder: true }, '*');
+    });
+  });
+})();
+<\/script>`;
+    }
+
+    // --- Modal viewport toggle ---
+    const editFrameWrapper = document.getElementById('editFrameWrapper');
+    let editViewportWidth = 375;
+
+    function updateEditFrameScale() {
+      const padding = 32;
+      const availableWidth  = editFrameWrapper.clientWidth  - padding;
+      const availableHeight = editFrameWrapper.clientHeight - padding;
+      const scale = Math.min(1, availableWidth / editViewportWidth);
+
+      editFrame.style.width  = editViewportWidth + 'px';
+      editFrame.style.height = (availableHeight / scale) + 'px';
+      editFrame.style.transform = `scale(${scale})`;
+    }
+
+    document.querySelectorAll('#editViewportToggles button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#editViewportToggles button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        editViewportWidth = parseInt(btn.dataset.editWidth);
+        updateEditFrameScale();
+      });
+    });
+
+    // --- Open modal ---
+    function openEditExportModal() {
       if (selectedComponents.length === 0) return;
-      const html = assembleExport(selectedComponents);
-      downloadExport(html);
+      const rawHtml = assembleExport(selectedComponents);
+      // Inject editing helpers right before </body>
+      const editableHtml = rawHtml.replace('</body>', getEditingScript() + '\n</body>');
+      editFrame.srcdoc = editableHtml;
+      editOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Delay scale calc until iframe is visible
+      requestAnimationFrame(() => updateEditFrameScale());
+    }
+
+    // --- Close modal ---
+    function closeEditExportModal() {
+      editOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+      closeIconPicker();
+      closeImageEditor();
+      editFrame.srcdoc = '';
+    }
+
+    // --- Icon picker ---
+    function openIconPicker(index) {
+      activeIconTarget = index;
+      closeImageEditor(); // close image panel if open
+      iconPickerPanel.classList.add('open');
+    }
+    function closeIconPicker() {
+      activeIconTarget = null;
+      iconPickerPanel.classList.remove('open');
+    }
+
+    // --- Image editor ---
+    function openImageEditor(index, currentSrc) {
+      activeImageTarget = index;
+      pendingImageSrc = null;
+      imageUrlInput.value = '';
+      imageApplyBtn.disabled = true;
+      closeIconPicker(); // close icon panel if open
+
+      // Show current image in preview
+      if (currentSrc) {
+        imageEditorPreview.innerHTML = `<img src="${currentSrc}" alt="Current">`;
+      } else {
+        imageEditorPreview.innerHTML = '<span class="placeholder-text">No image</span>';
+      }
+
+      imageEditorPanel.classList.add('open');
+    }
+    function closeImageEditor() {
+      activeImageTarget = null;
+      pendingImageSrc = null;
+      imageEditorPanel.classList.remove('open');
+    }
+
+    // URL input handler
+    imageUrlInput.addEventListener('input', () => {
+      const val = imageUrlInput.value.trim();
+      if (val) {
+        pendingImageSrc = val;
+        imageApplyBtn.disabled = false;
+        imageEditorPreview.innerHTML = `<img src="${val}" alt="Preview" onerror="this.style.display='none'">`;
+      } else {
+        pendingImageSrc = null;
+        imageApplyBtn.disabled = true;
+      }
+    });
+
+    // File upload — click area
+    imageUploadArea.addEventListener('click', () => imageFileInput.click());
+
+    // File upload — drag and drop
+    imageUploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      imageUploadArea.style.borderColor = 'var(--color-primary)';
+      imageUploadArea.style.background = '#fff5f5';
+    });
+    imageUploadArea.addEventListener('dragleave', () => {
+      imageUploadArea.style.borderColor = '';
+      imageUploadArea.style.background = '';
+    });
+    imageUploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      imageUploadArea.style.borderColor = '';
+      imageUploadArea.style.background = '';
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImageFile(file);
+    });
+
+    // File input change
+    imageFileInput.addEventListener('change', () => {
+      const file = imageFileInput.files[0];
+      if (file) handleImageFile(file);
+      imageFileInput.value = ''; // reset so same file can be re-selected
+    });
+
+    function handleImageFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        pendingImageSrc = e.target.result; // data URL
+        imageApplyBtn.disabled = false;
+        imageUrlInput.value = file.name;
+        imageEditorPreview.innerHTML = `<img src="${pendingImageSrc}" alt="Preview">`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Apply button
+    imageApplyBtn.addEventListener('click', () => {
+      if (activeImageTarget !== null && pendingImageSrc) {
+        editFrame.contentWindow.postMessage({ type: 'replaceImage', index: activeImageTarget, src: pendingImageSrc }, '*');
+        closeImageEditor();
+      }
+    });
+
+    imageEditorClose.addEventListener('click', closeImageEditor);
+
+    // --- Clean HTML for final export ---
+    function getCleanEditedHtml() {
+      const doc = editFrame.contentDocument;
+      if (!doc) return null;
+
+      // Clone the document to avoid mutating the live preview
+      const clone = doc.documentElement.cloneNode(true);
+
+      // Remove all contenteditable attributes
+      clone.querySelectorAll('[contenteditable]').forEach(el => {
+        el.removeAttribute('contenteditable');
+        el.removeAttribute('spellcheck');
+      });
+
+      // Remove icon edit overlays
+      clone.querySelectorAll('.icon-edit-overlay').forEach(el => el.remove());
+
+      // Remove image edit overlays
+      clone.querySelectorAll('.img-edit-overlay').forEach(el => el.remove());
+
+      // Remove data-icon-wrapper attributes
+      clone.querySelectorAll('[data-icon-wrapper]').forEach(el => {
+        el.removeAttribute('data-icon-wrapper');
+      });
+
+      // Remove data-img-wrapper attributes
+      clone.querySelectorAll('[data-img-wrapper]').forEach(el => {
+        el.removeAttribute('data-img-wrapper');
+      });
+
+      // Remove image editing attributes
+      clone.querySelectorAll('[data-img-editable]').forEach(el => {
+        el.removeAttribute('data-img-editable');
+        el.removeAttribute('data-img-idx');
+        el.removeAttribute('data-img-placeholder');
+        el.style.removeProperty('cursor');
+      });
+
+      // Remove the injected editing <style> and <script> (last style and last script in body)
+      const bodyEl = clone.querySelector('body');
+      if (bodyEl) {
+        // Remove editing style block (contains 'icon-edit-overlay')
+        bodyEl.querySelectorAll('style').forEach(s => {
+          if (s.textContent.includes('icon-edit-overlay')) s.remove();
+        });
+        // Remove editing script block (contains 'contenteditable')
+        bodyEl.querySelectorAll('script').forEach(s => {
+          if (s.textContent.includes('icon-edit-overlay') || s.textContent.includes('contenteditable')) s.remove();
+        });
+      }
+
+      return '<!DOCTYPE html>\n<html' + clone.outerHTML.slice(clone.outerHTML.indexOf('<html') + 5);
+    }
+
+    // --- Event listeners ---
+    // Export button now opens modal
+    exportBtn.addEventListener('click', () => {
+      openEditExportModal();
+    });
+
+    // Close modal
+    editCloseBtn.addEventListener('click', closeEditExportModal);
+    editOverlay.addEventListener('click', (e) => {
+      if (e.target === editOverlay) closeEditExportModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && editOverlay.classList.contains('open')) closeEditExportModal();
+    });
+
+    // Download final HTML from modal
+    editDownloadBtn.addEventListener('click', () => {
+      const cleaned = getCleanEditedHtml();
+      if (cleaned) downloadExport(cleaned);
+    });
+
+    // Icon picker close
+    iconPickerClose.addEventListener('click', closeIconPicker);
+
+    // Listen for messages from the edit iframe (icon click, image click)
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'openIconPicker') {
+        openIconPicker(e.data.index);
+      }
+      if (e.data && e.data.type === 'openImageEditor') {
+        openImageEditor(e.data.index, e.data.currentSrc);
+      }
     });
 
     // Preview viewport toggle (scale-to-fit)
@@ -991,7 +1940,10 @@ img { max-width: 100%; height: auto; }
     });
 
     // Recompute scale on window resize
-    window.addEventListener('resize', updatePreviewScale);
+    window.addEventListener('resize', () => {
+      updatePreviewScale();
+      if (editOverlay.classList.contains('open')) updateEditFrameScale();
+    });
 
     // Canvas collapse/expand
     canvasCollapseBtn.addEventListener('click', () => {
