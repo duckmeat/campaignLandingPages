@@ -1147,14 +1147,15 @@ img { max-width: 100%; height: auto; }
       scrollInner.innerHTML = '<h2>Component Library</h2>';
 
       categories.forEach(cat => {
-        const isCollapsed = collapsedCategories[cat] || false;
+        const isCollapsed = collapsedCategories[cat] !== false;
         const group = document.createElement('div');
         group.className = 'library-category' + (isCollapsed ? ' collapsed' : '');
 
         const heading = document.createElement('h3');
-        heading.innerHTML = `${cat} <span class="library-category-toggle">&#9660;</span>`;
+        heading.innerHTML = `${cat} <span style="display:inline-flex;align-items:center;gap:6px"><span class="library-category-toggle">&#9660;</span><span style="font-size:10px;font-weight:400;letter-spacing:0;text-transform:none;color:#bbb">${isCollapsed ? 'Click to expand' : 'Click to collapse'}</span></span>`;
         heading.addEventListener('click', () => {
-          collapsedCategories[cat] = !collapsedCategories[cat];
+          const currentlyCollapsed = collapsedCategories[cat] !== false;
+          collapsedCategories[cat] = !currentlyCollapsed;
           renderLibrary();
         });
         group.appendChild(heading);
