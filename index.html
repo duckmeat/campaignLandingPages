@@ -123,7 +123,7 @@
 
     /* Left Panel — Library */
     .panel-library {
-      width: 260px;
+      width: 30%;
       min-width: 180px;
       background: #fff;
       border-right: 1px solid #e0e0e0;
@@ -328,7 +328,7 @@
 
     /* Right Panel — Preview */
     .panel-preview {
-      width: 420px;
+      width: 40%;
       min-width: 280px;
       display: flex;
       flex-direction: column;
@@ -478,12 +478,13 @@
       justify-content: space-between;
     }
     .panel-canvas {
-      flex: 1;
+      width: 30%;
+      flex: none;
       display: flex;
       flex-direction: column;
       background: #f5f6f8;
       min-width: 0;
-      transition: flex 0.25s ease, min-width 0.25s ease;
+      transition: width 0.25s ease, min-width 0.25s ease;
     }
     .panel-canvas.collapsed {
       flex: 0;
